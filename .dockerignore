@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+.env.example
+.phpunit.result.cache
+docker-compose.yml
+Dockerfile
+node_modules
+public/build
+public/hot
+storage/*.key
+vendor
+tests
+README.md
