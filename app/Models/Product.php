@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -17,6 +18,7 @@ class Product extends Model
         'price',
         'category',
         'status',
+        'image_url',
     ];
 
     protected $casts = [
@@ -24,6 +26,21 @@ class Product extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Get the full URL for the product's image.
+     *
+     * @param  string|null  $value
+     * @return string|null
+     */
+    public function getImageUrlAttribute($value)
+    {
+        if ($value) {
+            return Storage::disk('public')->url($value);
+        }
+
+        return null;
+    }
 
     /**
      * Resolve the route binding for the given ID.

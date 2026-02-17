@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use App\Repositories\ProductRepositoryInterface;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProductService implements ProductServiceInterface
 {
@@ -85,14 +87,15 @@ class ProductService implements ProductServiceInterface
     {
         $product = $this->productRepository->find($id);
         if (!$product) {
-            return null;
+            throw new ModelNotFoundException("Produto com ID {$id} não encontrado.");
         }
 
-        $path = $request->file('image')->store('products', 's3');
-        $url = Storage::disk('s3')->url($path);
+        $path = $request->file('image')->store('products', 'public');
 
-        $this->productRepository->update($id, ['image_url' => $url]);
+        if (!$path) {
+            throw new Exception("Falha no upload do arquivo. Verifique a configuração de armazenamento.");
+        }
 
-        return $product->fresh();
+        return $this->productRepository->update($id, ['image_url' => $path]);
     }
 }
